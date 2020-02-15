@@ -30,9 +30,6 @@ import butterknife.OnClick;
 
 public class HomeActivity extends AppCompatActivity {
 
-    @BindView(R.id.floating_btn)
-    FloatingActionButton floatingActionButton;
-
     private static Uri filePath;
 
     private static final String TAG = "HomeActivity";
@@ -79,7 +76,6 @@ public class HomeActivity extends AppCompatActivity {
         @BindView(R.id.img_picked)
         ImageView imageView;
 
-        private FirebaseStorage storage;
         private StorageReference storageReference;
 
         private static final String TAG = "PicUploadDialogFragment";
@@ -89,7 +85,7 @@ public class HomeActivity extends AppCompatActivity {
             View view = inflater.inflate(R.layout.fragment_pic_upload_dialog, container, false);
             ButterKnife.bind(this, view);
 
-            storage = FirebaseStorage.getInstance();
+            FirebaseStorage storage = FirebaseStorage.getInstance();
             storageReference = storage.getReference();
 
             try {
