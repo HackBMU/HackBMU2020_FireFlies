@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.storage.FirebaseStorage;
@@ -34,16 +35,16 @@ import butterknife.BindView;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private static Uri filePath;
+    @BindView(R.id.rv_documents)
+    RecyclerView rvDocuments;
 
+    private static Uri filePath;
     private static final String TAG = "HomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        ButterKnife.bind(this);
     }
 
     @Override
@@ -132,14 +133,4 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-	@BindView(R.id.rv_documents)
-	RecyclerView rvDocuments;
-
-	private static final String TAG = "HomeActivity";
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_home);
-	}
 }
