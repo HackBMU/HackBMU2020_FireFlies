@@ -32,6 +32,9 @@ dependencies {
     // Firebase Authentication
     implementation 'com.google.firebase:firebase-auth:19.2.0'
 
+    // Firebase storage
+    implementation 'com.google.firebase:firebase-storage:19.1.1'
+
     // ButterKnife
     implementation 'com.jakewharton:butterknife:10.2.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'

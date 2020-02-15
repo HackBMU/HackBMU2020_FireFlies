@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.fireflies.govtfireflies.ValidationRegex.emailValidationRegex;
@@ -50,6 +51,7 @@ public class RegisterFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.fragment_register, container, false);
 		((AuthenticationActivity) getActivity()).setToolbarTitle(R.string.string_register);
+		ButterKnife.bind(this, view);
 		return view;
 	}
 

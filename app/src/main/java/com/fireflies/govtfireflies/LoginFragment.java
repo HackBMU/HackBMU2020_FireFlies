@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static com.fireflies.govtfireflies.ValidationRegex.emailValidationRegex;
@@ -39,13 +40,15 @@ public class LoginFragment extends Fragment {
 
 		View view = inflater.inflate(R.layout.fragment_login, container, false);
 		((AuthenticationActivity) getActivity()).setToolbarTitle(R.string.string_login);
+		ButterKnife.bind(this, view);
 		return view;
 	}
 
 
 	@OnClick(R.id.btn_login_using_google)
 	void onClickLoginUsingGoogle() {
-
+		Intent intent = new Intent(getActivity(), HomeActivity.class);
+		startActivity(intent);
 	}
 
 

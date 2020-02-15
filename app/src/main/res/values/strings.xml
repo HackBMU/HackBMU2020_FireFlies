@@ -22,4 +22,5 @@
     <string name="string_google_login">Login with Google</string>
     <string name="string_password">Password</string>
     <string name="string_email">Email</string>
+    <string name="string_cancel">Cancel</string>
 </resources>

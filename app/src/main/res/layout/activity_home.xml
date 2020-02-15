@@ -3,13 +3,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".HomeActivity">
 
+
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floating_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="26dp"
         android:layout_gravity="end|bottom"
+        app:background="@color/colorPrimary"
         android:src="@drawable/ic_add"
         />
 
