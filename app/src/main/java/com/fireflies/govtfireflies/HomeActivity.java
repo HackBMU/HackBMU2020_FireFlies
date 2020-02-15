@@ -28,6 +28,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import com.google.firebase.storage.StorageMetadata;
+
+import butterknife.BindView;
+
 public class HomeActivity extends AppCompatActivity {
 
     private static Uri filePath;
@@ -128,4 +132,14 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+	@BindView(R.id.rv_documents)
+	RecyclerView rvDocuments;
+
+	private static final String TAG = "HomeActivity";
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
+	}
 }
