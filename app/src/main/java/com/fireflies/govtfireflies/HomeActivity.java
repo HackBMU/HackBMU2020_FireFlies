@@ -36,101 +36,105 @@ import butterknife.BindView;
 public class HomeActivity extends AppCompatActivity {
 
     @BindView(R.id.rv_documents)
-    RecyclerView rvDocuments;
+	RecyclerView rvDocuments;
+
+	@BindView(R.id.floating_btn)
+	FloatingActionButton floatingActionButton;
 
     private static Uri filePath;
     private static final String TAG = "HomeActivity";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_home);
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            filePath = data.getData();
-            Log.d(TAG, "onActivityResult: " + getContentResolver().getType(filePath));
+		ButterKnife.bind(this);
+	}
 
-            Bundle bundle = new Bundle();
-            bundle.putString("filePath", filePath.getPath());
-            Log.d(TAG, "onActivityResult: " + filePath.getPath());
-            PicUploadDialogFragment picUploadDialogFragment = new PicUploadDialogFragment();
-            picUploadDialogFragment.setArguments(bundle);
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            picUploadDialogFragment.show(fragmentTransaction, PicUploadDialogFragment.TAG);
-        }
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 2 && resultCode == RESULT_OK && data != null && data.getData() != null) {
+			filePath = data.getData();
+			Log.d(TAG, "onActivityResult: " + getContentResolver().getType(filePath));
 
-    @OnClick(R.id.floating_btn)
-    void onClickAddPhoto() {
-        chooseImage();
-    }
+			Bundle bundle = new Bundle();
+			bundle.putString("filePath", filePath.getPath());
+			Log.d(TAG, "onActivityResult: " + filePath.getPath());
+			PicUploadDialogFragment picUploadDialogFragment = new PicUploadDialogFragment();
+			picUploadDialogFragment.setArguments(bundle);
+			FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+			picUploadDialogFragment.show(fragmentTransaction, PicUploadDialogFragment.TAG);
+		}
+	}
 
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), 2);
-    }
+	@OnClick(R.id.floating_btn)
+	void onClickAddPhoto() {
+		chooseImage();
+	}
 
-    public static class PicUploadDialogFragment extends DialogFragment {
+	private void chooseImage() {
+		Intent intent = new Intent();
+		intent.setType("image/*");
+		intent.setAction(Intent.ACTION_GET_CONTENT);
+		startActivityForResult(Intent.createChooser(intent, "Select Picture"), 2);
+	}
 
-        @BindView(R.id.img_picked)
-        ImageView imageView;
+	public static class PicUploadDialogFragment extends DialogFragment {
 
-        private StorageReference storageReference;
+		@BindView(R.id.img_picked)
+		ImageView imageView;
 
-        private static final String TAG = "PicUploadDialogFragment";
+		private StorageReference storageReference;
+		private static final String TAG = "PicUploadDialogFragment";
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_pic_upload_dialog, container, false);
-            ButterKnife.bind(this, view);
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			View view = inflater.inflate(R.layout.fragment_pic_upload_dialog, container, false);
+			ButterKnife.bind(this, view);
 
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            storageReference = storage.getReference();
+			FirebaseStorage storage = FirebaseStorage.getInstance();
+			storageReference = storage.getReference();
 
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
-                imageView.setImageBitmap(bitmap);
+			try {
+				Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
+				imageView.setImageBitmap(bitmap);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return view;
-        }
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return view;
+		}
 
-        @OnClick(R.id.btn_upload_pic)
-        void onClickUploadImage() {
-            uploadImage();
-        }
+		@OnClick(R.id.btn_upload_pic)
+		void onClickUploadImage() {
+			uploadImage();
+		}
 
-        @OnClick(R.id.btn_cancel_dialog)
-        void onClickCancelDialog() {
-            dismiss();
-        }
+		@OnClick(R.id.btn_cancel_dialog)
+		void onClickCancelDialog() {
+			dismiss();
+		}
 
-        private void uploadImage() {
+		private void uploadImage() {
 
-            if (filePath != null) {
-                final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-                progressDialog.setTitle("Uploading...");
-                progressDialog.show();
+			if (filePath != null) {
+				final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+				progressDialog.setTitle("Uploading...");
+				progressDialog.show();
 
-                StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
-                ref.putFile(filePath).addOnSuccessListener(taskSnapshot -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(getActivity(), "Uploaded", Toast.LENGTH_SHORT).show();
+				StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+				ref.putFile(filePath).addOnSuccessListener(taskSnapshot -> {
+					progressDialog.dismiss();
+					Toast.makeText(getActivity(), "Uploaded", Toast.LENGTH_SHORT).show();
 
-                }).addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(getActivity(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-            }
-        }
-    }
+				}).addOnFailureListener(e -> {
+					progressDialog.dismiss();
+					Toast.makeText(getActivity(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
+				});
+			}
+		}
+	}
 
 }
