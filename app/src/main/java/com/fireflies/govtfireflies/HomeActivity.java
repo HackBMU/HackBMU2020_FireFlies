@@ -11,18 +11,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -37,8 +49,11 @@ public class HomeActivity extends AppCompatActivity {
 	@BindView(R.id.floating_btn)
 	FloatingActionButton floatingActionButton;
 
-	private static Uri filePath;
+	@BindView(R.id.progress_bar)
+	ProgressBar progressBar;
 
+	private static Uri filePath;
+	private List<Document> documentList;
 	private static final String TAG = "HomeActivity";
 
 	@Override
@@ -47,6 +62,33 @@ public class HomeActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_home);
 
 		ButterKnife.bind(this);
+
+		progressBar.setVisibility(View.VISIBLE);
+		documentList = new ArrayList<>();
+		rvDocuments.setLayoutManager(new LinearLayoutManager(this));
+		DocumentAdapter adapter = new DocumentAdapter(documentList, this);
+		rvDocuments.setAdapter(adapter);
+
+		final FirebaseDatabase database = FirebaseDatabase.getInstance();
+		DatabaseReference ref = database.getReference("images");
+		ref.addValueEventListener(new ValueEventListener() {
+			@Override
+			public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+				progressBar.setVisibility(View.GONE);
+				for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+					Map<String, String> map = (HashMap) snapshot.getValue();
+					Document document = new Document(map.get("name"), map.get("by"), map.get("to"), String.valueOf(map.get("time")), map.get("type"));
+					documentList.add(document);
+				}
+				adapter.notifyDataSetChanged();
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError databaseError) {
+				progressBar.setVisibility(View.GONE);
+				Log.d(TAG, "onCancelled: " + databaseError.getMessage());
+			}
+		});
 	}
 
 	@Override
