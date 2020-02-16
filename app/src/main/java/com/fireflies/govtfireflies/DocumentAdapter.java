@@ -49,11 +49,10 @@ public class DocumentAdapter extends RecyclerView.Adapter<DocumentAdapter.Docume
 		holder.txtDocumentName.setText(document.getName());
 		holder.txtDocumentTime.setText(document.getTime());
 
-		StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images/" + document.getFileName());
-		Log.d(TAG, "onBindViewHolder: " + "images/" + document.getFileName());
+		StorageReference imagesRef = FirebaseStorage.getInstance().getReference().child("images/" + document.getBy());
 
-		long ONE_MEGABYTE = 1024 * 1024;
-		imagesRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
+		long HALF_MEGABYTE = 512 * 512;
+		imagesRef.getBytes(HALF_MEGABYTE).addOnSuccessListener(bytes -> {
 			Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 			holder.imgDocument.setImageBitmap(Bitmap.createScaledBitmap(bmp, holder.imgDocument.getWidth(),
 					holder.imgDocument.getHeight(), false));

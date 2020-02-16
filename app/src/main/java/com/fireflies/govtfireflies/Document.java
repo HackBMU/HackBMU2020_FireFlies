@@ -1,6 +1,7 @@
 package com.fireflies.govtfireflies;
 
 public class Document {
+	private String id;
 	private String name;
 	private String by;
 	private String to;
@@ -10,12 +11,13 @@ public class Document {
 	public Document() {
 	}
 
-	public Document(String name, String by, String to, String time, String type) {
+	public Document(String id, String name, String by, String to, String time, String type) {
 		this.name = name;
 		this.by = by;
 		this.to = to;
 		this.time = time;
 		this.type = type;
+		this.id = id;
 	}
 
 	public String getName() {
@@ -38,8 +40,8 @@ public class Document {
 		return type;
 	}
 
-	public String getFileName() {
-		return name + "." + type;
+	public String getId() {
+		return id;
 	}
 
 	@Override

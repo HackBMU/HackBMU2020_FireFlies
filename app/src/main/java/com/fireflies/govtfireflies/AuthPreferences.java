@@ -12,7 +12,7 @@ public class AuthPreferences {
 	private SharedPreferences.Editor editor;
 
 	public AuthPreferences(Context context) {
-		String PREF_NAME = "FireChat";
+		String PREF_NAME = "CorruptEnd";
 		sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 		editor = sharedPreferences.edit();
 		editor.apply();

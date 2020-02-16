@@ -2,7 +2,9 @@ package com.fireflies.govtfireflies;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
@@ -12,6 +14,13 @@ public class AuthenticationActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
+
+		Log.d(TAG, "onCreate: " + new AuthPreferences(this).getUserId());
+		AuthPreferences authPreferences = new AuthPreferences(this);
+		if (authPreferences.getUserId() != null) {
+			startActivity(new Intent(this, HomeActivity.class));
+			finish();
+		}
 
 		getSupportActionBar().setTitle("Login");
 

@@ -1,15 +1,19 @@
 package com.fireflies.govtfireflies;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -77,7 +81,9 @@ public class HomeActivity extends AppCompatActivity {
 				progressBar.setVisibility(View.GONE);
 				for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 					Map<String, String> map = (HashMap) snapshot.getValue();
-					Document document = new Document(map.get("name"), map.get("by"), map.get("to"), String.valueOf(map.get("time")), map.get("type"));
+
+					Document document = new Document(String.valueOf(map.get("id")), map.get("name"), map.get("by"), map.get("to"),
+							String.valueOf(map.get("time")), map.get("type"));
 					documentList.add(document);
 				}
 				adapter.notifyDataSetChanged();
@@ -99,8 +105,7 @@ public class HomeActivity extends AppCompatActivity {
 			Log.d(TAG, "onActivityResult: " + getContentResolver().getType(filePath));
 
 			Bundle bundle = new Bundle();
-			bundle.putString("filePath", filePath.getPath());
-			Log.d(TAG, "onActivityResult: " + filePath.getPath());
+			bundle.putString("from", new AuthPreferences(this).getEmail());
 			PicUploadDialogFragment picUploadDialogFragment = new PicUploadDialogFragment();
 			picUploadDialogFragment.setArguments(bundle);
 			FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -125,6 +130,14 @@ public class HomeActivity extends AppCompatActivity {
 		@BindView(R.id.img_picked)
 		ImageView imageView;
 
+		@BindView(R.id.edt_email_to)
+		EditText edtEmailTo;
+
+		@BindView(R.id.edt_name)
+		EditText edtName;
+
+		private String emailFrom;
+
 		private StorageReference storageReference;
 		private static final String TAG = "PicUploadDialogFragment";
 
@@ -132,6 +145,8 @@ public class HomeActivity extends AppCompatActivity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View view = inflater.inflate(R.layout.fragment_pic_upload_dialog, container, false);
 			ButterKnife.bind(this, view);
+
+			emailFrom = getArguments().getString("from");
 
 			FirebaseStorage storage = FirebaseStorage.getInstance();
 			storageReference = storage.getReference();
@@ -148,7 +163,32 @@ public class HomeActivity extends AppCompatActivity {
 
 		@OnClick(R.id.btn_upload_pic)
 		void onClickUploadImage() {
-			uploadImage();
+			boolean isInvalid = false;
+			String fileName = edtName.getText().toString().trim();
+			String emailTo = edtEmailTo.getText().toString().trim();
+
+			if (TextUtils.isEmpty(fileName)) {
+				edtName.setError("Required");
+				isInvalid = true;
+
+			} else if (emailTo.contains(" ")) {
+				edtName.setError("Name shouldn't contain whitespace(s)");
+				isInvalid = true;
+			}
+
+
+			if (TextUtils.isEmpty(emailTo)) {
+				edtEmailTo.setError("Required");
+				isInvalid = true;
+
+			} else if (!emailTo.contains("@")) {
+				edtEmailTo.setError("not an email");
+				isInvalid = true;
+			}
+
+			if (!isInvalid) {
+				uploadImage(fileName, emailTo);
+			}
 		}
 
 		@OnClick(R.id.btn_cancel_dialog)
@@ -156,21 +196,27 @@ public class HomeActivity extends AppCompatActivity {
 			dismiss();
 		}
 
-		private void uploadImage() {
-
+		private void uploadImage(String name, String emailTo) {
 			if (filePath != null) {
 				final ProgressDialog progressDialog = new ProgressDialog(getActivity());
 				progressDialog.setTitle("Uploading...");
 				progressDialog.show();
 
-				StorageReference ref = storageReference.child("images/" + UUID.randomUUID().toString());
+				String id = UUID.randomUUID().toString();
+				StorageReference ref = storageReference.child("images/" + id);
 				ref.putFile(filePath).addOnSuccessListener(taskSnapshot -> {
 					progressDialog.dismiss();
-					Toast.makeText(getActivity(), "Uploaded", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), "Document Uploaded", Toast.LENGTH_SHORT).show();
+
+					DatabaseReference imagesRef = FirebaseDatabase.getInstance().getReference().child("images");
+					Map<String, Document> map = new HashMap<>();
+					map.put(id, new Document(id, name, emailFrom, emailTo, "" + System.currentTimeMillis(), "jpg"));
+
+					imagesRef.setValue(map);
 
 				}).addOnFailureListener(e -> {
 					progressDialog.dismiss();
-					Toast.makeText(getActivity(), "Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity(), "Document Upload Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
 				});
 			}
 		}
