@@ -108,12 +108,12 @@ public class RegisterFragment extends Fragment {
 				if (task.isSuccessful()) {
 
 					progressBar.setVisibility(View.GONE);
-					Log.d(TAG, "createUserWithEmail: success");
 					FirebaseUser user = auth.getCurrentUser();
 					assert user != null: "Couldn't Get user Info";
 
 					AuthPreferences authPreferences = new AuthPreferences(getActivity());
 					authPreferences.setEmail(user.getEmail());
+					authPreferences.setUserId(user.getUid());
 					startActivity(new Intent(getActivity(), HomeActivity.class));
 					getActivity().finish();
 
