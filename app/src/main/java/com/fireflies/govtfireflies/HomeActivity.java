@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,6 +72,7 @@ public class HomeActivity extends AppCompatActivity {
 		documentList = new ArrayList<>();
 		rvDocuments.setLayoutManager(new LinearLayoutManager(this));
 		DocumentAdapter adapter = new DocumentAdapter(documentList, this);
+		rvDocuments.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 		rvDocuments.setAdapter(adapter);
 
 		final FirebaseDatabase database = FirebaseDatabase.getInstance();
